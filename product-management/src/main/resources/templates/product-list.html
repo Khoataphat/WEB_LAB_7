@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,47 +11,47 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 10px;
             padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
-        
+
         h1 {
             color: #667eea;
             margin-bottom: 20px;
             text-align: center;
         }
-        
+
         .alert {
             padding: 15px;
             margin-bottom: 20px;
             border-radius: 5px;
         }
-        
+
         .alert-success {
             background-color: #d4edda;
             color: #155724;
             border: 1px solid #c3e6cb;
         }
-        
+
         .alert-error {
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
         }
-        
+
         .actions {
             display: flex;
             justify-content: space-between;
@@ -58,7 +59,7 @@
             flex-wrap: wrap;
             gap: 10px;
         }
-        
+
         .btn {
             padding: 10px 20px;
             border: none;
@@ -68,141 +69,565 @@
             display: inline-block;
             transition: all 0.3s;
         }
-        
+
         .btn-primary {
             background-color: #667eea;
             color: white;
         }
-        
+
         .btn-primary:hover {
             background-color: #5568d3;
         }
-        
+
         .btn-success {
             background-color: #28a745;
             color: white;
         }
-        
+
         .btn-danger {
             background-color: #dc3545;
             color: white;
         }
-        
+
         .btn-sm {
             padding: 5px 10px;
             font-size: 14px;
         }
-        
+
+        /* Thêm style cho nút filter dạng outline */
+        .btn-outline-primary {
+            background-color: white;
+            color: #667eea;
+            border: 1px solid #667eea;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: #f0f0ff;
+        }
+
+        /* Container cho các nút lọc danh mục */
+        .filter-buttons-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
         .search-form {
             display: flex;
             gap: 10px;
         }
-        
+
         .search-form input {
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             flex: 1;
         }
-        
+
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-        
-        th, td {
+
+        th,
+        td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
-        
+
         th {
             background-color: #667eea;
             color: white;
         }
-        
+
         tr:hover {
             background-color: #f5f5f5;
         }
-        
+
         .empty-state {
             text-align: center;
             padding: 40px;
             color: #666;
         }
-        
+
         .actions-column {
             display: flex;
             gap: 5px;
         }
+
+        /* Màu chủ đạo */
+        :root {
+            --primary-color: #4f46e5;
+            /* Màu xanh lam đậm */
+            --secondary-color: #6b7280;
+            /* Màu xám */
+            --light-bg: #f3f4f6;
+            /* Nền nhẹ */
+            --border-color: #d1d5db;
+            /* Màu viền */
+            --hover-color: #6366f1;
+            /* Màu khi di chuột */
+        }
+
+        /* Container chính của form Tìm kiếm Nâng cao */
+        .advanced-search-container {
+            margin-bottom: 20px;
+            border: 1px solid var(--border-color);
+            padding: 20px;
+            border-radius: 12px;
+            /* Bo góc mềm mại hơn */
+            background-color: #ffffff;
+            /* Nền trắng */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            /* Thêm bóng đổ nhẹ */
+        }
+
+        /* Tiêu đề Tìm kiếm Nâng cao */
+        .search-summary {
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--primary-color);
+            padding: 5px 0;
+            list-style: none;
+            /* Bỏ dấu mũi tên mặc định */
+        }
+
+        .search-summary::marker {
+            display: none;
+        }
+
+        .search-summary .icon {
+            margin-right: 8px;
+        }
+
+        /* Bố cục Form */
+        .search-form {
+            margin-top: 15px;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            /* 2 cột */
+            gap: 20px;
+            /* Khoảng cách lớn hơn */
+            padding-top: 15px;
+            border-top: 1px dashed var(--light-bg);
+            /* Đường phân cách nhẹ */
+        }
+
+        /* Nhóm form (Label + Input/Select) */
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-weight: 600;
+            /* In đậm nhẹ cho Label */
+            margin-bottom: 6px;
+            color: #374151;
+            /* Màu chữ tối hơn */
+        }
+
+        /* Style cho Input và Select */
+        .search-form input[type="text"],
+        .search-form input[type="number"],
+        .search-form select {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            /* Bo góc cho input */
+            font-size: 1rem;
+            transition: all 0.2s;
+            background-color: var(--light-bg);
+            /* Nền input hơi xám */
+        }
+
+        .search-form input:focus,
+        .search-form select:focus {
+            border-color: var(--primary-color);
+            /* Highlight khi focus */
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            /* Vòng sáng mờ */
+            outline: none;
+            background-color: #ffffff;
+        }
+
+        /* Khu vực nút hành động */
+        .form-actions {
+            grid-column: 1 / span 2;
+            text-align: right;
+            /* Đẩy nút về bên phải */
+            padding-top: 10px;
+        }
+
+        /* Style chung cho nút */
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            text-decoration: none;
+            /* Cho nút Đặt lại */
+            display: inline-flex;
+            align-items: center;
+            margin-left: 10px;
+        }
+
+        /* Nút Primary (Áp dụng Tìm kiếm) */
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--hover-color);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-primary .icon {
+            margin-right: 5px;
+        }
+
+        /* Nút Secondary (Đặt lại) */
+        .btn-secondary {
+            background-color: var(--light-bg);
+            color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background-color: var(--border-color);
+            color: #374151;
+        }
+
+        /* Điều chỉnh responsive cho màn hình nhỏ hơn */
+        @media (max-width: 600px) {
+            .search-form {
+                grid-template-columns: 1fr;
+                /* Chuyển thành 1 cột */
+            }
+
+            .form-actions {
+                grid-column: 1 / span 1;
+                text-align: center;
+                /* Nút nằm giữa */
+            }
+
+            .btn {
+                margin: 5px;
+                width: calc(50% - 10px);
+                /* Nút chiếm 50% */
+            }
+        }
+
+        /* --- Bổ sung CSS cho Phân trang Hiện đại --- */
+        /* Container chính của phân trang */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            /* Đặt phân trang vào giữa */
+            align-items: center;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            gap: 15px;
+            /* Khoảng cách giữa các khối (buttons và info) */
+        }
+
+        /* Danh sách các nút trang */
+        .pagination-list {
+            list-style: none;
+            padding: 0;
+            display: flex;
+            gap: 5px;
+            /* Khoảng cách nhỏ giữa các nút số trang */
+        }
+
+        /* Style cơ sở cho nút phân trang */
+        .pagination-btn {
+            padding: 8px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.2s;
+            background-color: white;
+            color: var(--primary-color);
+            min-width: 38px;
+            /* Đảm bảo kích thước đồng đều cho các nút số */
+            text-align: center;
+        }
+
+        /* Nút Active (Trang hiện tại) */
+        .pagination-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            font-weight: 700;
+        }
+
+        /* Nút trang thường khi hover */
+        .pagination-btn:not(.active):hover {
+            background-color: var(--light-bg);
+            border-color: var(--primary-color);
+        }
+
+        /* Nút Previous/Next bị disabled */
+        .pagination-btn.disabled {
+            pointer-events: none;
+            background-color: var(--light-bg);
+            color: var(--secondary-color);
+            opacity: 0.6;
+            cursor: default;
+        }
+
+        /* Thông tin trang (Page X of Y) */
+        .pagination-info {
+            color: #4a5568;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        /* Responsive cho màn hình nhỏ */
+        @media (max-width: 768px) {
+            .pagination-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
     </style>
+
 </head>
+
 <body>
+
     <div class="container">
+
         <h1>📦 Product Management System</h1>
-        
-        <!-- Success Message -->
+
         <div th:if="${message}" class="alert alert-success">
             <span th:text="${message}"></span>
         </div>
-        
-        <!-- Error Message -->
+
         <div th:if="${error}" class="alert alert-error">
             <span th:text="${error}"></span>
         </div>
-        
-        <!-- Actions -->
+
         <div class="actions">
             <a th:href="@{/products/new}" class="btn btn-primary">➕ Add New Product</a>
-            
+
+            <div class="filter-buttons-group">
+                <h5>Lọc theo Danh mục:</h5>
+
+                <a th:href="@{/products(sortBy=${sortBy}, sortDir=${sortDir}, keyword=${keyword})}" class="btn btn-sm"
+                    th:classappend="${currentCategory == null or currentCategory.isEmpty()} ? 'btn-primary' : 'btn-outline-primary'">
+                    Tất cả Sản phẩm
+                </a>
+
+                <a th:each="cat : ${categories}"
+                    th:href="@{/products(sortBy=${sortBy}, sortDir=${sortDir}, category=${cat}, keyword=${keyword})}"
+                    class="btn btn-sm"
+                    th:classappend="${cat == currentCategory} ? 'btn-primary' : 'btn-outline-primary'" th:text="${cat}">
+                </a>
+            </div>
+
+            <div th:if="${totalPages > 0}" class="pagination-container">
+                <nav>
+                    <ul class="pagination-list">
+
+                        <li>
+                            <a th:href="@{/products/search(keyword=${keyword}, page=${currentPage - 1}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir}, category=${currentCategory})}"
+                                class="pagination-btn" th:classappend="${currentPage == 0 ? 'disabled' : ''}">
+                                « Trước
+                            </a>
+                        </li>
+
+                        <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}">
+                            <a th:href="@{/products/search(keyword=${keyword}, page=${i}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir}, category=${currentCategory})}"
+                                class="pagination-btn" th:classappend="${currentPage == i ? 'active' : ''}">
+                                <span th:text="${i + 1}">1</span>
+                            </a>
+                        </li>
+
+                        <li>
+                            <a th:href="@{/products/search(keyword=${keyword}, page=${currentPage + 1}, size=${size}, sortBy=${sortBy}, sortDir=${sortDir}, category=${currentCategory})}"
+                                class="pagination-btn"
+                                th:classappend="${currentPage == totalPages - 1 ? 'disabled' : ''}">
+                                Sau »
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+
+                <div class="pagination-info">
+                    Trang <span th:text="${currentPage + 1}">1</span> / <span th:text="${totalPages}">1</span>
+                </div>
+            </div>
+
+
             <form th:action="@{/products/search}" method="get" class="search-form">
+
                 <input type="text" name="keyword" th:value="${keyword}" placeholder="Search products..." />
+
                 <button type="submit" class="btn btn-primary">🔍 Search</button>
+
             </form>
+
         </div>
-        
-        <!-- Products Table -->
+
+        <div class="container mt-4">
+            <a th:href="@{/export/excel}" class="btn btn-success mb-3">
+                📄 Export to Excel
+            </a>
+
+        </div>
+
+
+        <details class="advanced-search-container">
+
+            <summary class="search-summary">
+                <span class="icon">✨</span> Tìm kiếm Nâng cao
+            </summary>
+
+            <form th:action="@{/products/advanced-search}" method="get" class="search-form">
+
+                <div class="form-group">
+                    <label for="search-name">Tên chứa:</label>
+                    <input type="text" id="search-name" name="name" th:value="${searchName}"
+                        placeholder="Laptop, iPhone, Ghế..." />
+                </div>
+
+                <div class="form-group">
+                    <label for="search-category">Danh mục:</label>
+                    <select id="search-category" name="category">
+                        <option value="" th:selected="${searchCategory == null or searchCategory == ''}">Tất cả</option>
+                        <option value="Electronics" th:selected="${searchCategory == 'Electronics'}">Electronics
+                        </option>
+                        <option value="Furniture" th:selected="${searchCategory == 'Furniture'}">Furniture</option>
+                        <option value="Clothing" th:selected="${searchCategory == 'Clothing'}">Clothing</option>
+                    </select>
+                </div>
+
+                <div class="form-group price-group">
+                    <label for="min-price">Giá từ:</label>
+                    <input type="number" id="min-price" name="minPrice" th:value="${minPrice}" step="0.01" min="0"
+                        placeholder="0.00" />
+                </div>
+
+                <div class="form-group price-group">
+                    <label for="max-price">Giá đến:</label>
+                    <input type="number" id="max-price" name="maxPrice" th:value="${maxPrice}" step="0.01" min="0"
+                        placeholder="Max" />
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <span class="icon">🔍</span> Áp dụng Tìm kiếm
+                    </button>
+                    <a th:href="@{/products}" class="btn btn-secondary">Đặt lại</a>
+                </div>
+
+            </form>
+
+        </details>
+
         <div th:if="${products != null and !products.isEmpty()}">
+
             <table>
                 <thead>
                     <tr>
+                        <th>Image</th>
                         <th>ID</th>
                         <th>Code</th>
-                        <th>Name</th>
-                        <th>Price</th>
+
+                        <th>
+                            <a th:href="@{/products(sortBy='name', sortDir=${sortBy=='name' and sortDir=='asc' ? 'desc' : 'asc'}, category=${currentCategory}, keyword=${keyword}, page=${currentPage}, size=${size})}"
+                                style="color: white; text-decoration: none;">
+                                Name
+                                <span th:if="${sortBy=='name'}" th:text="${sortDir=='asc'?'↑':'↓'}"></span>
+                            </a>
+                        </th>
+
+                        <th>
+                            <a th:href="@{/products(sortBy='price', sortDir=${sortBy=='price' and sortDir=='asc' ? 'desc' : 'asc'}, category=${currentCategory}, keyword=${keyword}, page=${currentPage}, size=${size})}"
+                                style="color: white; text-decoration: none;">
+                                Price
+                                <span th:if="${sortBy=='price'}" th:text="${sortDir=='asc'?'↑':'↓'}"></span>
+                            </a>
+                        </th>
+
                         <th>Quantity</th>
                         <th>Category</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
+
                     <tr th:each="product : ${products}">
-                        <td th:text="${product.id}">1</td>
-                        <td th:text="${product.productCode}">P001</td>
-                        <td th:text="${product.name}">Product Name</td>
-                        <td th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">$99.99</td>
-                        <td th:text="${product.quantity}">10</td>
-                        <td th:text="${product.category}">Electronics</td>
+
                         <td>
+                            <img th:if="${product.imagePath}" th:src="@{'/uploads/' + ${product.imagePath}}"
+                                style="width: 50px; height: 50px; object-fit: cover;">
+                            <span th:unless="${product.imagePath}">No Image</span>
+                        </td>
+
+                        <td th:text="${product.id}">1</td>
+
+                        <td th:text="${product.productCode}">P001</td>
+
+                        <td th:text="${product.name}">Product Name</td>
+
+                        <td th:text="'$' + ${#numbers.formatDecimal(product.price, 1, 2)}">$99.99</td>
+
+                        <td th:text="${product.quantity}">10</td>
+
+                        <td th:text="${product.category}">Electronics</td>
+
+                        <td>
+
                             <div class="actions-column">
-                                <a th:href="@{/products/edit/{id}(id=${product.id})}" class="btn btn-success btn-sm">✏️ Edit</a>
-                                <a th:href="@{/products/delete/{id}(id=${product.id})}" 
-                                   class="btn btn-danger btn-sm"
-                                   onclick="return confirm('Are you sure you want to delete this product?')">
+
+                                <a th:href="@{/products/edit/{id}(id=${product.id})}" class="btn btn-success btn-sm">✏️
+                                    Edit</a>
+
+                                <a th:href="@{/products/delete/{id}(id=${product.id})}" class="btn btn-danger btn-sm"
+                                    onclick="return confirm('Are you sure you want to delete this product?')">
                                     🗑️ Delete
                                 </a>
+
                             </div>
+
                         </td>
+
                     </tr>
+
                 </tbody>
+
             </table>
+
         </div>
-        
-        <!-- Empty State -->
+
         <div th:if="${products == null or products.isEmpty()}" class="empty-state">
             <p>No products found. Add your first product!</p>
         </div>
+        <div class="container mt-4">
+            <h1 class="mb-4">📋 Product List</h1>
+
+            <a th:href="@{/dashboard}" class="btn btn-info mb-3">
+                📊 View Dashboard Statistics
+            </a>
+
+        </div>
+
     </div>
+
 </body>
+
 </html>

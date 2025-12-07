@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,53 +11,74 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             padding: 20px;
         }
-        
+
         .container {
             max-width: 600px;
             margin: 0 auto;
             background: white;
             border-radius: 10px;
             padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
-        
+
         h1 {
             color: #667eea;
             margin-bottom: 30px;
             text-align: center;
         }
-        
+
         .form-group {
             margin-bottom: 20px;
         }
-        
+
         label {
             display: block;
             margin-bottom: 5px;
             color: #333;
             font-weight: 500;
         }
-        
-        input, select, textarea {
+
+        input,
+        select,
+        textarea {
             width: 100%;
             padding: 10px;
             border: 1px solid #ddd;
             border-radius: 5px;
             font-size: 14px;
         }
-        
+
         textarea {
             resize: vertical;
             min-height: 100px;
         }
-        
+
+        /* Style cho input bị lỗi */
+        input.error,
+        select.error,
+        textarea.error {
+            border-color: #dc3545;
+            /* Màu đỏ */
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+
+        /* Định kiểu cho thông báo lỗi */
+        .error-message {
+            color: #dc3545;
+            /* Màu đỏ */
+            font-size: 0.85em;
+            margin-top: 5px;
+            display: block;
+            font-weight: 600;
+        }
+
         .btn {
             padding: 12px 30px;
             border: none;
@@ -67,25 +89,25 @@
             margin-right: 10px;
             transition: all 0.3s;
         }
-        
+
         .btn-primary {
             background-color: #667eea;
             color: white;
         }
-        
+
         .btn-primary:hover {
             background-color: #5568d3;
         }
-        
+
         .btn-secondary {
             background-color: #6c757d;
             color: white;
         }
-        
+
         .btn-secondary:hover {
             background-color: #5a6268;
         }
-        
+
         .button-group {
             margin-top: 30px;
             display: flex;
@@ -93,56 +115,57 @@
         }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1 th:text="${product.id != null} ? '✏️ Edit Product' : '➕ Add New Product'">Product Form</h1>
-        
-        <form th:action="@{/products/save}" th:object="${product}" method="post">
-            <!-- Hidden ID field for updates -->
-            <input type="hidden" th:field="*{id}" />
-            
+
+<form th:action="@{/products/save}" th:object="${product}" method="post" enctype="multipart/form-data">            <input type="hidden" th:field="*{id}" />
+
+            <div class="form-group">
+                <label for="imageFile">Product Image</label>
+                <input type="file" class="form-control-file" id="imageFile" name="imageFile">
+
+                <div th:if="${product.imagePath != null and not #strings.isEmpty(product.imagePath)}">
+                    Current Image: <img th:src="@{'/uploads/' + ${product.imagePath}}"
+                        style="width: 100px; height: auto;">
+                    <input type="hidden" th:field="*{imagePath}" />
+                </div>
+            </div>
+
             <div class="form-group">
                 <label for="productCode">Product Code *</label>
-                <input type="text" 
-                       id="productCode" 
-                       th:field="*{productCode}" 
-                       placeholder="Enter product code (e.g., P001)"
-                       required />
+                <input type="text" id="productCode" th:field="*{productCode}"
+                    placeholder="Enter product code (e.g., P001)" th:errorclass="error" />
+                <span th:if="${#fields.hasErrors('productCode')}" th:errors="*{productCode}"
+                    class="error-message">Error</span>
             </div>
-            
+
             <div class="form-group">
                 <label for="name">Product Name *</label>
-                <input type="text" 
-                       id="name" 
-                       th:field="*{name}" 
-                       placeholder="Enter product name"
-                       required />
+                <input type="text" id="name" th:field="*{name}" placeholder="Enter product name"
+                    th:errorclass="error" />
+                <span th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-message">Error</span>
             </div>
-            
+
             <div class="form-group">
                 <label for="price">Price ($) *</label>
-                <input type="number" 
-                       id="price" 
-                       th:field="*{price}" 
-                       step="0.01" 
-                       min="0"
-                       placeholder="0.00"
-                       required />
+                <input type="number" id="price" th:field="*{price}" step="0.01" min="0" placeholder="0.00"
+                    th:errorclass="error" />
+                <span th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="error-message">Error</span>
             </div>
-            
+
             <div class="form-group">
                 <label for="quantity">Quantity *</label>
-                <input type="number" 
-                       id="quantity" 
-                       th:field="*{quantity}" 
-                       min="0"
-                       placeholder="0"
-                       required />
+                <input type="number" id="quantity" th:field="*{quantity}" min="0" placeholder="0"
+                    th:errorclass="error" />
+                <span th:if="${#fields.hasErrors('quantity')}" th:errors="*{quantity}"
+                    class="error-message">Error</span>
             </div>
-            
+
             <div class="form-group">
                 <label for="category">Category *</label>
-                <select id="category" th:field="*{category}" required>
+                <select id="category" th:field="*{category}" th:errorclass="error">
                     <option value="">Select category</option>
                     <option value="Electronics">Electronics</option>
                     <option value="Furniture">Furniture</option>
@@ -151,15 +174,18 @@
                     <option value="Food">Food</option>
                     <option value="Other">Other</option>
                 </select>
+                <span th:if="${#fields.hasErrors('category')}" th:errors="*{category}"
+                    class="error-message">Error</span>
             </div>
-            
+
             <div class="form-group">
                 <label for="description">Description</label>
-                <textarea id="description" 
-                          th:field="*{description}" 
-                          placeholder="Enter product description (optional)"></textarea>
+                <textarea id="description" th:field="*{description}" placeholder="Enter product description (optional)"
+                    th:errorclass="error"></textarea>
+                <span th:if="${#fields.hasErrors('description')}" th:errors="*{description}"
+                    class="error-message">Error</span>
             </div>
-            
+
             <div class="button-group">
                 <button type="submit" class="btn btn-primary">💾 Save Product</button>
                 <a th:href="@{/products}" class="btn btn-secondary">❌ Cancel</a>
@@ -167,4 +193,5 @@
         </form>
     </div>
 </body>
+
 </html>

@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management Dashboard</title>
+
+    <style>
+        /* Màu chủ đạo */
+        :root {
+            --primary-color: #667eea; /* Xanh tím */
+            --secondary-color: #764ba2; /* Tím */
+            --text-color: #374151;
+            --light-bg: #f3f4f6;
+            --border-color: #d1d5db;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        /* --- Style cho Thẻ thống kê (Cards) --- */
+        .stat-card {
+            background-color: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            height: 100%;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title {
+            font-weight: 600;
+            color: var(--text-color);
+            font-size: 1.1rem;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2.5em;
+            font-weight: 700;
+            line-height: 1.2;
+        }
+        
+        /* Màu sắc thống kê */
+        .text-primary-stat { color: var(--primary-color); } /* Total Products */
+        .text-success-stat { color: #28a745; } /* Total Value */
+        .text-info-stat { color: #17a2b8; } /* Average Price */
+        .text-danger-stat { color: #dc3545; } /* Low Stock */
+
+
+        /* --- Style cho Bảng và Danh sách --- */
+        .data-card {
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden; /* Giữ bảng không tràn */
+            margin-bottom: 20px;
+        }
+
+        .card-header-custom {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            padding: 12px 20px;
+            font-size: 1.1rem;
+        }
+        
+        .card-header-warning {
+            background-color: #ffc107;
+            color: var(--text-color);
+        }
+
+        /* Danh sách (Category Counts) */
+        .list-group-item-custom {
+            padding: 12px 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .list-group-item-custom:last-child {
+            border-bottom: none;
+        }
+
+        .badge-pill-custom {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-weight: 600;
+        }
+
+        /* Bảng */
+        .table-custom {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table-custom th {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            padding: 12px 20px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+        }
+
+        .table-custom td {
+            padding: 12px 20px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .table-custom tbody tr:nth-child(odd) {
+            background-color: #f9f9f9;
+        }
+        
+        /* Link quay lại */
+        .back-link {
+            color: var(--primary-color);
+            font-weight: 600;
+            text-decoration: none;
+            margin-top: 20px;
+            display: block;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h1>📊 Product Statistics Dashboard</h1>
+        
+        <div class="row mb-4">
+            
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <h5 class="card-title">Total Products</h5>
+                    <p class="stat-value text-primary-stat" th:text="${totalCount}"></p>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <h5 class="card-title">Total Inventory Value</h5>
+                    <p class="stat-value text-success-stat" 
+                        th:text="'$' + ${#numbers.formatDecimal(totalValue, 0, 'COMMA', 2, 'POINT')}"></p>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <h5 class="card-title">Average Price</h5>
+                    <p class="stat-value text-info-stat" 
+                        th:text="'$' + ${#numbers.formatDecimal(avgPrice, 0, 'COMMA', 2, 'POINT')}"></p>
+                </div>
+            </div>
+            
+            <div class="col-md-3 mb-3">
+                <div class="stat-card">
+                    <h5 class="card-title">Low Stock Alerts</h5>
+                    <p class="stat-value text-danger-stat" th:text="${lowStockProducts.size()}"></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="data-card">
+                    <div class="card-header-custom">
+                        📦 Products by Category
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item-custom" 
+                            th:each="entry : ${categoryCounts}">
+                            <span th:text="${entry.key}">Electronics</span>
+                            <span class="badge-pill-custom" th:text="${entry.value}">15</span>
+                        </li>
+                        <li th:if="${categoryCounts.isEmpty()}" class="list-group-item-custom text-center">No categories found.</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="data-card">
+                    <div class="card-header-custom card-header-warning">
+                        ⚠️ Low Stock Alerts (Quantity &lt; <span th:text="${lowStockThreshold}">10</span>)
+                    </div>
+                    <div>
+                        <table class="table-custom mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Code</th>
+                                    <th>Qty</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="product : ${lowStockProducts}">
+                                    <td th:text="${product.name}">Laptop X1</td>
+                                    <td th:text="${product.productCode}">P001</td>
+                                    <td th:text="${product.quantity}" class="text-danger-stat">5</td>
+                                </tr>
+                                <tr th:if="${lowStockProducts.isEmpty()}">
+                                    <td colspan="3" class="text-center">No low stock alerts. Inventory is healthy!</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row mt-2">
+            <div class="col-12">
+                <div class="data-card">
+                    <div class="card-header-custom">
+                        ⭐ Recent Products (Last 5 Added)
+                    </div>
+                    <div>
+                        <table class="table-custom mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Quantity</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="product : ${recentProducts}">
+                                    <td th:text="${product.name}">New Phone</td>
+                                    <td th:text="${product.category}">Electronics</td>
+                                    <td th:text="'$' + ${#numbers.formatDecimal(product.price, 0, 'COMMA', 2, 'POINT')}">1200.00</td>
+                                    <td th:text="${product.quantity}">50</td>
+                                </tr>
+                                <tr th:if="${recentProducts.isEmpty()}">
+                                    <td colspan="4" class="text-center">No recent products found.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <p class="mt-4"><a href="/products" class="back-link">← Go to Product List</a></p>
+
+    </div>
+</body>
+
+</html>
